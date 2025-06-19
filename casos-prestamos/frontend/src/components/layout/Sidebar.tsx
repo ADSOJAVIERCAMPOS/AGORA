@@ -21,9 +21,9 @@ const Sidebar: React.FC<SidebarProps> = ({
 
   // Tabs logic by role name
   const allTabs = [
-    { id: 'crear-caso', label: 'Crear Caso', icon: '📝', isDropdown: true },
-    { id: 'prestamos', label: 'Gestión de Préstamos', icon: '📋' },
-    { id: 'auxiliares', label: 'Gestión de Auxiliares', icon: '🧑‍💼' }
+    { id: 'gestion-casos', label: 'Gestión de Casos', icon: '📝', isDropdown: true },
+    { id: 'prestamos', label: 'Gestión de Inventario', icon: '📋' },
+    { id: 'auxiliares', label: 'Gestión de Usuarios', icon: '🧑‍💼' }
   ];
 
   let visibleTabs = allTabs;
@@ -32,7 +32,7 @@ const Sidebar: React.FC<SidebarProps> = ({
     visibleTabs = allTabs.filter(tab => tab.id !== 'auxiliares');
   }
 
-  const handleCrearCasoClick = () => {
+  const handleGestionCasosClick = () => {
     setIsDropdownOpen(!isDropdownOpen);
   };
 
@@ -70,7 +70,7 @@ const Sidebar: React.FC<SidebarProps> = ({
                   <Button
                     variant={currentTab.startsWith('caso-') ? 'primary' : 'secondary'}
                     fullWidth
-                    onClick={handleCrearCasoClick}
+                    onClick={handleGestionCasosClick}
                     className={`justify-start flex items-center gap-2 text-base font-semibold rounded-lg shadow-md transition-all duration-150 px-4 py-2 ${
                       currentTab.startsWith('caso-') 
                         ? 'bg-[#388e3c] border-l-4 border-white' 

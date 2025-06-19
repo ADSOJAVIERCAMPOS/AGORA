@@ -2,6 +2,7 @@ import React, { useState, useRef } from 'react';
 import Card from '../../ui/Card';
 import Input from '../../ui/Input';
 import Button from '../../ui/Button';
+import Swal from 'sweetalert2';
 
 interface FileUpload {
   file: File;
@@ -90,12 +91,20 @@ const CasoAcudienteForm: React.FC<CasoAcudienteFormProps> = ({ onSubmit, onCance
       const isValidSize = file.size <= 5 * 1024 * 1024; // 5MB
       
       if (!isValidType) {
-        alert(`El archivo ${file.name} no es un formato válido. Solo se permiten PDF, JPG y PNG.`);
+        Swal.fire({
+          title: 'Archivo inválido',
+          text: `El archivo ${file.name} no es un formato válido. Solo se permiten PDF, JPG y PNG.`,
+          icon: 'error'
+        });
         return false;
       }
       
       if (!isValidSize) {
-        alert(`El archivo ${file.name} excede el tamaño máximo de 5MB.`);
+        Swal.fire({
+          title: 'Archivo muy grande',
+          text: `El archivo ${file.name} excede el tamaño máximo de 5MB.`,
+          icon: 'error'
+        });
         return false;
       }
       

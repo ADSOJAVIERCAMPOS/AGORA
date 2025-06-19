@@ -1,0 +1,7 @@
+comandos git: 
+
+cd /home/fabrica0/AGORA
+git add .
+git commit -m "......."
+git push origin main
+

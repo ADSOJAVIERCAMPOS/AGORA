@@ -14,6 +14,7 @@ import CasoAcudienteForm from '@/components/feature/casos/CasoAcudienteForm';
 import SignaturePad from '@/components/ui/SignaturePad';
 import AvatarUserHeader from '@/components/ui/AvatarUserHeader';
 import Button from '@/components/ui/Button';
+import Swal from 'sweetalert2';
 
 // Interfaces
 interface DashboardData {
@@ -202,7 +203,16 @@ export default function DashboardPage() {
       }
 
       const data = await res.json();
-      alert(`Préstamo registrado exitosamente. Número de caso: ${data.data.numeroCaso}`);
+      Swal.fire({
+        title: '¡Préstamo registrado!',
+        text: `Número de caso: ${data.data.numeroCaso}`,
+        width: 600,
+        padding: '3em',
+        color: '#388e3c',
+        background: "#fff url('https://userscontent2.emaze.com/images/12951ed1-079a-43f7-967d-939a79e0ca14/50dd6ca60763b25fe05bb86f246eb059.gif') no-repeat center/contain",
+        backdrop: `rgba(0,0,0,0.2) url('https://userscontent2.emaze.com/images/12951ed1-079a-43f7-967d-939a79e0ca14/50dd6ca60763b25fe05bb86f246eb059.gif') center top no-repeat`,
+        icon: 'success'
+      });
       setCurrentPrestamoTab('list');
       fetchPrestamos();
     } catch (err: any) {
@@ -231,7 +241,16 @@ export default function DashboardPage() {
         const errorData = await res.json();
         throw new Error(errorData.message || `Fallo al actualizar estado del préstamo ${id}.`);
       }
-      alert(`Estado del préstamo ${id} actualizado a ${newState}.`);
+      Swal.fire({
+        title: '¡Estado actualizado!',
+        text: `Estado del préstamo ${id} actualizado a ${newState}.`,
+        width: 600,
+        padding: '3em',
+        color: '#388e3c',
+        background: "#fff url('https://userscontent2.emaze.com/images/12951ed1-079a-43f7-967d-939a79e0ca14/50dd6ca60763b25fe05bb86f246eb059.gif') no-repeat center/contain",
+        backdrop: `rgba(0,0,0,0.2) url('https://userscontent2.emaze.com/images/12951ed1-079a-43f7-967d-939a79e0ca14/50dd6ca60763b25fe05bb86f246eb059.gif') center top no-repeat`,
+        icon: 'success'
+      });
       fetchPrestamos();
     } catch (err: any) {
       console.error('Error updating prestamo status:', err);
@@ -274,7 +293,16 @@ export default function DashboardPage() {
         throw new Error(errorData.message || 'Error al registrar la devolución');
       }
 
-      alert('Devolución registrada exitosamente');
+      Swal.fire({
+        title: '¡Devolución registrada!',
+        text: 'La devolución fue registrada exitosamente.',
+        width: 600,
+        padding: '3em',
+        color: '#388e3c',
+        background: "#fff url('https://userscontent2.emaze.com/images/12951ed1-079a-43f7-967d-939a79e0ca14/50dd6ca60763b25fe05bb86f246eb059.gif') no-repeat center/contain",
+        backdrop: `rgba(0,0,0,0.2) url('https://userscontent2.emaze.com/images/12951ed1-079a-43f7-967d-939a79e0ca14/50dd6ca60763b25fe05bb86f246eb059.gif') center top no-repeat`,
+        icon: 'success'
+      });
       setShowDevolucionModal(false);
       setDevolucionData({
         fechaDevolucion: '',
@@ -344,7 +372,16 @@ export default function DashboardPage() {
         const errorData = await res.json();
         throw new Error(errorData.message || 'Fallo al crear auxiliar.');
       }
-      alert('Auxiliar creado exitosamente.');
+      Swal.fire({
+        title: '¡Auxiliar creado!',
+        text: 'Auxiliar creado exitosamente.',
+        width: 600,
+        padding: '3em',
+        color: '#388e3c',
+        background: "#fff url('https://userscontent2.emaze.com/images/12951ed1-079a-43f7-967d-939a79e0ca14/50dd6ca60763b25fe05bb86f246eb059.gif') no-repeat center/contain",
+        backdrop: `rgba(0,0,0,0.2) url('https://userscontent2.emaze.com/images/12951ed1-079a-43f7-967d-939a79e0ca14/50dd6ca60763b25fe05bb86f246eb059.gif') center top no-repeat`,
+        icon: 'success'
+      });
       fetchAuxiliares();
       setCurrentAuxiliarTab('list');
     } catch (err: any) {
@@ -373,7 +410,16 @@ export default function DashboardPage() {
         const errorData = await res.json();
         throw new Error(errorData.message || 'Fallo al actualizar auxiliar.');
       }
-      alert('Auxiliar actualizado exitosamente.');
+      Swal.fire({
+        title: '¡Auxiliar actualizado!',
+        text: 'Auxiliar actualizado exitosamente.',
+        width: 600,
+        padding: '3em',
+        color: '#388e3c',
+        background: "#fff url('https://userscontent2.emaze.com/images/12951ed1-079a-43f7-967d-939a79e0ca14/50dd6ca60763b25fe05bb86f246eb059.gif') no-repeat center/contain",
+        backdrop: `rgba(0,0,0,0.2) url('https://userscontent2.emaze.com/images/12951ed1-079a-43f7-967d-939a79e0ca14/50dd6ca60763b25fe05bb86f246eb059.gif') center top no-repeat`,
+        icon: 'success'
+      });
       fetchAuxiliares();
       setCurrentAuxiliarTab('list');
       setEditingAuxiliar(null);
@@ -403,7 +449,16 @@ export default function DashboardPage() {
         const errorData = await res.json();
         throw new Error(errorData.message || 'Fallo al cambiar estado del auxiliar.');
       }
-      alert(`Estado del auxiliar ${auxiliarId} cambiado a ${!currentStatus ? 'Activo' : 'Inactivo'}.`);
+      Swal.fire({
+        title: '¡Estado cambiado!',
+        text: `Estado del auxiliar ${auxiliarId} cambiado a ${!currentStatus ? 'Activo' : 'Inactivo'}.`,
+        width: 600,
+        padding: '3em',
+        color: '#388e3c',
+        background: "#fff url('https://userscontent2.emaze.com/images/12951ed1-079a-43f7-967d-939a79e0ca14/50dd6ca60763b25fe05bb86f246eb059.gif') no-repeat center/contain",
+        backdrop: `rgba(0,0,0,0.2) url('https://userscontent2.emaze.com/images/12951ed1-079a-43f7-967d-939a79e0ca14/50dd6ca60763b25fe05bb86f246eb059.gif') center top no-repeat`,
+        icon: 'success'
+      });
       fetchAuxiliares();
     } catch (err: any) {
       console.error('Error toggling auxiliar status:', err);
@@ -466,10 +521,28 @@ export default function DashboardPage() {
       }
 
       const data = await response.json();
-      alert(`Caso creado exitosamente. Número de caso: ${data.data.numeroCaso}`);
+      Swal.fire({
+        title: '¡Caso creado!',
+        text: `Número de caso: ${data.data.numeroCaso}`,
+        width: 600,
+        padding: '3em',
+        color: '#388e3c',
+        background: "#fff url('https://userscontent2.emaze.com/images/12951ed1-079a-43f7-967d-939a79e0ca14/50dd6ca60763b25fe05bb86f246eb059.gif') no-repeat center/contain",
+        backdrop: `rgba(0,0,0,0.2) url('https://userscontent2.emaze.com/images/12951ed1-079a-43f7-967d-939a79e0ca14/50dd6ca60763b25fe05bb86f246eb059.gif') center top no-repeat`,
+        icon: 'success'
+      });
     } catch (error) {
       console.error('Error:', error);
-      alert('Error al crear el caso. Por favor, intente nuevamente.');
+      Swal.fire({
+        title: 'Error',
+        text: 'Error al crear el caso. Por favor, intente nuevamente.',
+        width: 600,
+        padding: '3em',
+        color: '#b71c1c',
+        background: "#fff url('https://userscontent2.emaze.com/images/12951ed1-079a-43f7-967d-939a79e0ca14/50dd6ca60763b25fe05bb86f246eb059.gif') no-repeat center/contain",
+        backdrop: `rgba(0,0,0,0.2) url('https://userscontent2.emaze.com/images/12951ed1-079a-43f7-967d-939a79e0ca14/50dd6ca60763b25fe05bb86f246eb059.gif') center top no-repeat`,
+        icon: 'error'
+      });
     }
   };
 
@@ -520,7 +593,13 @@ export default function DashboardPage() {
         userName={dashboardData.userName}
         userRole={dashboardData.userRole.name}
         currentTab={currentMainTab}
-        onTabChange={(tab: string) => setCurrentMainTab(tab as 'caso-general' | 'caso-especial' | 'caso-acudientes' | 'prestamos' | 'auxiliares')}
+        onTabChange={(tab: string) => {
+          if (tab === 'gestion-casos') {
+            setCurrentMainTab('caso-general');
+          } else {
+            setCurrentMainTab(tab as 'caso-general' | 'caso-especial' | 'caso-acudientes' | 'prestamos' | 'auxiliares');
+          }
+        }}
         onLogout={handleLogout}
       />
 

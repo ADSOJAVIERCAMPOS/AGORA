@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import Swal from 'sweetalert2';
 
 export default function AuthPage() {
   const [currentView, setCurrentView] = useState<'login' | 'forgotPassword'>('login');
@@ -73,7 +74,11 @@ export default function AuthPage() {
         throw new Error(data.message || 'Error al enviar el correo.');
       }
 
-      alert('Enlace enviado al correo.');
+      Swal.fire({
+        title: '¡Enlace enviado!',
+        text: 'Revisa tu correo para restablecer la contraseña.',
+        icon: 'success'
+      });
       setCurrentView('login');
       resetForm();
     } catch (err: any) {
@@ -88,6 +93,45 @@ export default function AuthPage() {
   return (
     <>
       <style jsx>{`
+        .login-bg {
+          min-height: 100vh;
+          display: flex;
+          flex-direction: row;
+          background: #fff;
+        }
+        .login-image {
+          flex: 0.7;
+          background: url('https://i.imgur.com/7qBOeqg.png') no-repeat center center;
+          background-size: contain;
+          background-repeat: no-repeat;
+          background-position: center;
+          min-height: 100vh;
+          width: 100%;
+        }
+        .login-form-container {
+          flex: 1.3;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+          background: #fff;
+          min-height: 100vh;
+        }
+        @media (max-width: 900px) {
+          .login-bg {
+            flex-direction: column;
+          }
+          .login-image {
+            min-height: 180px;
+            height: 180px;
+            background-size: contain;
+            background-position: top center;
+          }
+          .login-form-container {
+            min-height: auto;
+            padding: 24px 0;
+          }
+        }
         .scene {
           width: 90%;
           max-width: 380px;
@@ -161,13 +205,13 @@ export default function AuthPage() {
           width: 100%;
           background: linear-gradient(to right, #63d135, #007e00);
           color: white;
-          padding: 0.75rem 1.5rem;
-          font-weight: 600;
-          font-size: 1rem;
+          padding: 1rem 2rem;
+          font-weight: 700;
+          font-size: 1.2rem;
           border: none;
           border-radius: 0.5rem;
           cursor: pointer;
-          margin-top: 1rem;
+          margin-top: 1.2rem;
           transition: background-color 0.3s ease;
         }
 
@@ -199,84 +243,89 @@ export default function AuthPage() {
         }
       `}</style>
 
-      <div className="min-h-screen flex items-center justify-center p-4" style={{ backgroundColor: '#478B3F' }}>
-        <div className="scene">
-          <div className={`card ${currentView === 'login' ? 'is-login' : 'is-forgot-password'}`}>
-            {/* Login */}
-            <div className="card__face card__face--front">
-              <img src="/logo-sena.png" alt="Logo SENA" className="w-24 h-24 mb-4 object-contain" />
-              <h1 className="text-2xl font-bold mb-6" style={{ color: '#478B3F' }}>
-                Iniciar Sesión
-              </h1>
-              <form onSubmit={handleLoginSubmit} className="w-full flex flex-col gap-4">
-                <div>
-                  <label htmlFor="email" className="input-label">Correo institucional</label>
-                  <input
-                    type="email"
-                    id="email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    className="form-input"
-                    required
-                  />
-                </div>
-                <div>
-                  <label htmlFor="password" className="input-label">Contraseña</label>
-                  <input
-                    type="password"
-                    id="password"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    className="form-input"
-                    required
-                  />
-                </div>
-                {error && <p className="error-message">{error}</p>}
-                <button type="submit" className="submit-button">Ingresar</button>
-              </form>
-              <button
-                className="link-button"
-                type="button"
-                onClick={() => {
-                  setCurrentView('forgotPassword');
-                  resetForm();
-                }}
-              >
-                ¿Olvidaste tu contraseña?
-              </button>
-            </div>
+      <div className="login-bg">
+        <div className="login-image" />
+        <div className="login-form-container">
+          <img src="/agoraIcono.svg" alt="Logo AGORA" style={{ width: 320, marginBottom: 16 }} />
+          <div style={{ textAlign: 'center', marginBottom: 32 }}>
+            <span style={{ color: '#388e3c', fontWeight: 'bold', fontSize: 40, letterSpacing: 4 }}>AGORA</span>
+          </div>
+          <div className="scene">
+            <div className={`card ${currentView === 'login' ? 'is-login' : 'is-forgot-password'}`}>
+              {/* Login */}
+              <div className="card__face card__face--front">
+                <h1 className="text-2xl font-bold mb-6" style={{ color: '#478B3F' }}>
+                  Iniciar Sesión
+                </h1>
+                <form onSubmit={handleLoginSubmit} className="w-full flex flex-col gap-4">
+                  <div>
+                    <label htmlFor="email" className="input-label">Correo institucional</label>
+                    <input
+                      type="email"
+                      id="email"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      className="form-input"
+                      required
+                    />
+                  </div>
+                  <div>
+                    <label htmlFor="password" className="input-label">Contraseña</label>
+                    <input
+                      type="password"
+                      id="password"
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      className="form-input"
+                      required
+                    />
+                  </div>
+                  {error && <p className="error-message">{error}</p>}
+                  <button type="submit" className="submit-button">Ingresar</button>
+                </form>
+                <button
+                  className="link-button"
+                  type="button"
+                  onClick={() => {
+                    setCurrentView('forgotPassword');
+                    resetForm();
+                  }}
+                >
+                  ¿Olvidaste tu contraseña?
+                </button>
+              </div>
 
-            {/* Recuperar contraseña */}
-            <div className="card__face card__face--forgot-password">
-              <img src="/logo-sena.png" alt="Logo SENA" className="w-24 h-24 mb-4 object-contain" />
-              <h1 className="text-2xl font-bold mb-6" style={{ color: '#478B3F' }}>
-                Recuperar Contraseña
-              </h1>
-              <form onSubmit={handleForgotPasswordSubmit} className="w-full flex flex-col gap-4">
-                <div>
-                  <label htmlFor="forgot-email" className="input-label">Correo institucional</label>
-                  <input
-                    type="email"
-                    id="forgot-email"
-                    value={forgotPasswordEmail}
-                    onChange={(e) => setForgotPasswordEmail(e.target.value)}
-                    className="form-input"
-                    required
-                  />
-                </div>
-                {error && <p className="error-message">{error}</p>}
-                <button type="submit" className="submit-button">Enviar enlace</button>
-              </form>
-              <button
-                className="link-button"
-                type="button"
-                onClick={() => {
-                  setCurrentView('login');
-                  resetForm();
-                }}
-              >
-                Volver a Iniciar sesión
-              </button>
+              {/* Recuperar contraseña */}
+              <div className="card__face card__face--forgot-password">
+                <h1 className="text-2xl font-bold mb-6" style={{ color: '#478B3F' }}>
+                  Recuperar Contraseña
+                </h1>
+                <form onSubmit={handleForgotPasswordSubmit} className="w-full flex flex-col gap-4">
+                  <div>
+                    <label htmlFor="forgot-email" className="input-label">Correo institucional</label>
+                    <input
+                      type="email"
+                      id="forgot-email"
+                      value={forgotPasswordEmail}
+                      onChange={(e) => setForgotPasswordEmail(e.target.value)}
+                      className="form-input"
+                      required
+                    />
+                  </div>
+                  {error && <p className="error-message">{error}</p>}
+                  <button type="submit" className="submit-button">Enviar enlace</button>
+                </form>
+                <button
+                  className="link-button"
+                  type="button"
+                  onClick={() => {
+                    setCurrentView('login');
+                    resetForm();
+                  }}
+                >
+                  Volver a Iniciar sesión
+                </button>
+              </div>
             </div>
           </div>
         </div>

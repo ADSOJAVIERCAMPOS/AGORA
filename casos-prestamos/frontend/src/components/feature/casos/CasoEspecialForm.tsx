@@ -2,6 +2,7 @@ import React, { useState, useRef } from 'react';
 import Card from '../../ui/Card';
 import Input from '../../ui/Input';
 import Button from '../../ui/Button';
+import Swal from 'sweetalert2';
 
 interface FileUpload {
   file: File;
@@ -71,12 +72,20 @@ const CasoEspecialForm: React.FC<CasoEspecialFormProps> = ({ onSubmit, onCancel 
       const isValidSize = file.size <= 5 * 1024 * 1024; // 5MB
       
       if (!isValidType) {
-        alert(`El archivo ${file.name} no es un formato válido. Solo se permiten PDF, JPG y PNG.`);
+        Swal.fire({
+          title: 'Archivo inválido',
+          text: `El archivo ${file.name} no es un formato válido. Solo se permiten PDF, JPG y PNG.`,
+          icon: 'error'
+        });
         return false;
       }
       
       if (!isValidSize) {
-        alert(`El archivo ${file.name} excede el tamaño máximo de 5MB.`);
+        Swal.fire({
+          title: 'Archivo muy grande',
+          text: `El archivo ${file.name} excede el tamaño máximo de 5MB.`,
+          icon: 'error'
+        });
         return false;
       }
       
@@ -143,11 +152,27 @@ const CasoEspecialForm: React.FC<CasoEspecialFormProps> = ({ onSubmit, onCancel 
         throw new Error(result.message || 'Error al registrar el caso especial');
       }
 
-      alert('Caso especial registrado exitosamente');
+      Swal.fire({
+        title: '¡Caso especial registrado!',
+        text: 'Caso especial registrado exitosamente',
+        width: 600,
+        padding: '3em',
+        color: '#388e3c',
+        background: "#fff url('https://userscontent2.emaze.com/images/12951ed1-079a-43f7-967d-939a79e0ca14/50dd6ca60763b25fe05bb86f246eb059.gif') no-repeat center/contain",
+        backdrop: `rgba(0,0,0,0.2) url('https://userscontent2.emaze.com/images/12951ed1-079a-43f7-967d-939a79e0ca14/50dd6ca60763b25fe05bb86f246eb059.gif') center top no-repeat`,
+        icon: 'success'
+      });
       onCancel();
     } catch (error) {
       console.error('Error detallado:', error);
-      alert(`Error al registrar el caso especial: ${error instanceof Error ? error.message : 'Error desconocido'}`);
+      Swal.fire({
+        title: 'Error',
+        text: `Error al registrar el caso especial: ${error instanceof Error ? error.message : 'Error desconocido'}`,
+        icon: 'error',
+        color: '#b71c1c',
+        background: "#fff url('https://userscontent2.emaze.com/images/12951ed1-079a-43f7-967d-939a79e0ca14/50dd6ca60763b25fe05bb86f246eb059.gif') no-repeat center/contain",
+        backdrop: `rgba(0,0,0,0.2) url('https://userscontent2.emaze.com/images/12951ed1-079a-43f7-967d-939a79e0ca14/50dd6ca60763b25fe05bb86f246eb059.gif') center top no-repeat`
+      });
     }
   };
 

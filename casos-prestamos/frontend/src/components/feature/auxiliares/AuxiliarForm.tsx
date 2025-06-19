@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import Card from '../../ui/Card';
 import Input from '../../ui/Input';
 import Button from '../../ui/Button';
+import Swal from 'sweetalert2';
 
 interface AuxiliarFormProps {
   auxiliar?: {
@@ -81,11 +82,27 @@ const AuxiliarForm: React.FC<AuxiliarFormProps> = ({ auxiliar, onSave, onCancel 
       };
 
       await onSave(dataToSubmit);
-      alert('Usuario auxiliar registrado correctamente');
+      Swal.fire({
+        title: '¡Usuario registrado!',
+        text: 'Usuario auxiliar registrado correctamente',
+        width: 600,
+        padding: '3em',
+        color: '#388e3c',
+        background: "#fff url('https://userscontent2.emaze.com/images/12951ed1-079a-43f7-967d-939a79e0ca14/50dd6ca60763b25fe05bb86f246eb059.gif') no-repeat center/contain",
+        backdrop: `rgba(0,0,0,0.2) url('https://userscontent2.emaze.com/images/12951ed1-079a-43f7-967d-939a79e0ca14/50dd6ca60763b25fe05bb86f246eb059.gif') center top no-repeat`,
+        icon: 'success'
+      });
       onCancel();
     } catch (error) {
       console.error('Error al registrar el usuario auxiliar:', error);
-      alert('Error al registrar el usuario auxiliar. Por favor, intente nuevamente.');
+      Swal.fire({
+        title: 'Error',
+        text: 'Error al registrar el usuario auxiliar. Por favor, intente nuevamente.',
+        icon: 'error',
+        color: '#b71c1c',
+        background: "#fff url('https://userscontent2.emaze.com/images/12951ed1-079a-43f7-967d-939a79e0ca14/50dd6ca60763b25fe05bb86f246eb059.gif') no-repeat center/contain",
+        backdrop: `rgba(0,0,0,0.2) url('https://userscontent2.emaze.com/images/12951ed1-079a-43f7-967d-939a79e0ca14/50dd6ca60763b25fe05bb86f246eb059.gif') center top no-repeat`
+      });
     }
   };
 
