@@ -596,6 +596,16 @@ export default function DashboardPage() {
         onTabChange={(tab: string) => {
           if (tab === 'gestion-casos') {
             setCurrentMainTab('caso-general');
+          } else if (tab === 'prestamos-list' || tab === 'prestamos-create' || tab === 'prestamos-devolucion') {
+            setCurrentMainTab('prestamos');
+            if (tab === 'prestamos-list') setCurrentPrestamoTab('list');
+            if (tab === 'prestamos-create') setCurrentPrestamoTab('create');
+            if (tab === 'prestamos-devolucion') setCurrentPrestamoTab('devolucion');
+          } else if (tab === 'auxiliares-list' || tab === 'auxiliares-create' || tab === 'auxiliares-edit') {
+            setCurrentMainTab('auxiliares');
+            if (tab === 'auxiliares-list') setCurrentAuxiliarTab('list');
+            if (tab === 'auxiliares-create') setCurrentAuxiliarTab('create');
+            if (tab === 'auxiliares-edit') setCurrentAuxiliarTab('edit');
           } else {
             setCurrentMainTab(tab as 'caso-general' | 'caso-especial' | 'caso-acudientes' | 'prestamos' | 'auxiliares');
           }

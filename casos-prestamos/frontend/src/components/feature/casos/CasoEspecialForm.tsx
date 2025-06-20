@@ -169,9 +169,8 @@ const CasoEspecialForm: React.FC<CasoEspecialFormProps> = ({ onSubmit, onCancel 
         title: 'Error',
         text: `Error al registrar el caso especial: ${error instanceof Error ? error.message : 'Error desconocido'}`,
         icon: 'error',
-        color: '#b71c1c',
-        background: "#fff url('https://userscontent2.emaze.com/images/12951ed1-079a-43f7-967d-939a79e0ca14/50dd6ca60763b25fe05bb86f246eb059.gif') no-repeat center/contain",
-        backdrop: `rgba(0,0,0,0.2) url('https://userscontent2.emaze.com/images/12951ed1-079a-43f7-967d-939a79e0ca14/50dd6ca60763b25fe05bb86f246eb059.gif') center top no-repeat`
+        color: '#e53935',
+        confirmButtonColor: '#388e3c'
       });
     }
   };

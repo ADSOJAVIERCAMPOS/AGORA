@@ -9,6 +9,8 @@ export default function AuthPage() {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [forgotPasswordEmail, setForgotPasswordEmail] = useState('');
+  const [nombre, setNombre] = useState('');
+  const [rol, setRol] = useState('');
 
   const API_BASE = 'http://localhost:8000';
 
@@ -24,22 +26,13 @@ export default function AuthPage() {
     setError('');
 
     try {
-      const res = await fetch(`${API_BASE}/api/login`, {
+      const res = await fetch('http://localhost:8000/api/login', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Accept: 'application/json',
-        },
-        credentials: 'include',
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password }),
       });
-
-      if (!res.ok) {
-        const data = await res.json();
-        throw new Error(data.message || 'Credenciales inválidas.');
-      }
-
       const data = await res.json();
+      if (!res.ok) throw new Error(data.message);
       localStorage.setItem('token', data.token);
       localStorage.setItem('user', JSON.stringify(data.user));
       localStorage.setItem('role', JSON.stringify(data.role));
@@ -85,6 +78,123 @@ export default function AuthPage() {
       setError(
         err.message === 'Failed to fetch'
           ? 'Error de conexión. Inténtalo luego.'
+          : err.message
+      );
+    }
+  };
+
+  const handlePrestamoSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError('');
+
+    try {
+      const token = localStorage.getItem('token');
+      const formData = new FormData();
+      // ...agrega campos y archivos...
+      const res = await fetch('http://localhost:8000/api/prestamos', {
+        method: 'POST',
+        headers: { 'Authorization': `Bearer ${token}` },
+        body: formData,
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.message);
+    } catch (err: any) {
+      setError(
+        err.message === 'Failed to fetch'
+          ? 'Error de conexión. Inténtalo más tarde.'
+          : err.message
+      );
+    }
+  };
+
+  const handleUsuariosSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError('');
+
+    try {
+      const token = localStorage.getItem('token');
+      const res = await fetch('http://localhost:8000/api/usuarios', {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      const usuarios = await res.json();
+      if (!res.ok) throw new Error(usuarios.message);
+    } catch (err: any) {
+      setError(
+        err.message === 'Failed to fetch'
+          ? 'Error al obtener la lista de usuarios.'
+          : err.message
+      );
+    }
+  };
+
+  const handleUsuariosCreate = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError('');
+
+    try {
+      const token = localStorage.getItem('token');
+      const res = await fetch('http://localhost:8000/api/usuarios', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({ nombre, email, password, rol })
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.message);
+    } catch (err: any) {
+      setError(
+        err.message === 'Failed to fetch'
+          ? 'Error al crear el usuario.'
+          : err.message
+      );
+    }
+  };
+
+  const handleUsuariosUpdate = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError('');
+
+    try {
+      const token = localStorage.getItem('token');
+      const id = 'someUserId'; // Replace with actual user ID
+      const res = await fetch(`${API_BASE}/api/usuarios/${id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({ nombre, email, rol })
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.message);
+    } catch (err: any) {
+      setError(
+        err.message === 'Failed to fetch'
+          ? 'Error al actualizar el usuario.'
+          : err.message
+      );
+    }
+  };
+
+  const handleUsuariosDesactivar = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError('');
+
+    try {
+      const token = localStorage.getItem('token');
+      const id = 'someUserId'; // Replace with actual user ID
+      const res = await fetch(`${API_BASE}/api/usuarios/${id}/desactivar`, {
+        method: 'PATCH',
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.message);
+    } catch (err: any) {
+      setError(
+        err.message === 'Failed to fetch'
+          ? 'Error al desactivar el usuario.'
           : err.message
       );
     }
@@ -278,6 +388,24 @@ export default function AuthPage() {
                       onChange={(e) => setPassword(e.target.value)}
                       className="form-input"
                       required
+                    />
+                  </div>
+                  <div>
+                    <label htmlFor="nombre" className="input-label">Nombre</label>
+                    <input
+                      type="text"
+                      value={nombre}
+                      onChange={e => setNombre(e.target.value)}
+                      placeholder="Nombre"
+                    />
+                  </div>
+                  <div>
+                    <label htmlFor="rol" className="input-label">Rol</label>
+                    <input
+                      type="text"
+                      value={rol}
+                      onChange={e => setRol(e.target.value)}
+                      placeholder="Rol"
                     />
                   </div>
                   {error && <p className="error-message">{error}</p>}

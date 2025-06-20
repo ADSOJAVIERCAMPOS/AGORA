@@ -19,7 +19,7 @@ return [
 
     'allowed_methods' => ['*'], // Permite todos los métodos HTTP (GET, POST, PUT, DELETE, OPTIONS)
 
-    'allowed_origins' => ['http://localhost:3000'], // ¡ESTA ES LA LÍNEA CRÍTICA! Añade la URL de tu frontend Next.js aquí.
+    'allowed_origins' => ['http://localhost:3000'], // Puedes agregar más dominios si tienes despliegue en producción
                                                      // Si tienes otros frontends o dominios en producción, agrégalos también.
                                                      // Para desarrollo, 'http://localhost:3000' es lo que necesitas.
 
