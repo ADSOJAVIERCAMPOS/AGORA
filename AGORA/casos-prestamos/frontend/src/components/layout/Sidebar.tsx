@@ -207,11 +207,11 @@ const Sidebar: React.FC<SidebarProps> = ({
               ) : (
                 tab.id === 'prestamos' ? (
                   <Button
-                    variant={currentTab === tab.id ? 'primary' : 'secondary'}
+                    variant={currentTab.startsWith('prestamos') ? 'primary' : 'secondary'}
                     fullWidth
                     onClick={handleGestionInventarioClick}
                     className={`justify-start flex items-center gap-2 text-base font-semibold rounded-lg shadow-md transition-all duration-150 px-4 py-2 ${
-                      currentTab === tab.id 
+                      currentTab.startsWith('prestamos') 
                         ? 'bg-[#39A900] border-l-4 border-white' 
                         : 'bg-white/80 text-[#39A900] hover:bg-[#e8f5e9]'
                     } focus:ring-2 focus:ring-white`}

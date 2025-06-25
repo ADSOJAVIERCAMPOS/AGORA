@@ -18,6 +18,7 @@ const CasoEspecialForm: React.FC<CasoEspecialFormProps> = ({ onSubmit, onCancel 
   const [formData, setFormData] = useState({
     nombreAprendiz: '',
     documento: '',
+    tipoDocumento: '',
     ficha: '',
     descripcion: '',
     fecha: new Date().toISOString().split('T')[0],
@@ -46,12 +47,22 @@ const CasoEspecialForm: React.FC<CasoEspecialFormProps> = ({ onSubmit, onCancel 
     'Alto'
   ];
 
+  const tiposDocumento = [
+    'Cédula de Ciudadanía',
+    'Tarjeta de Identidad',
+    'Cédula de Extranjería',
+    'Pasaporte',
+    'Registro Civil',
+    'Otro'
+  ];
+
   const validateForm = () => {
     const newErrors: Record<string, string> = {};
     
     // Validaciones base
     if (!formData.nombreAprendiz) newErrors.nombreAprendiz = 'El nombre es requerido';
     if (!formData.documento) newErrors.documento = 'El documento es requerido';
+    if (!formData.tipoDocumento) newErrors.tipoDocumento = 'El tipo de documento es requerido';
     if (!formData.ficha) newErrors.ficha = 'La ficha es requerida';
     if (!formData.descripcion) newErrors.descripcion = 'La descripción es requerida';
     
@@ -124,6 +135,7 @@ const CasoEspecialForm: React.FC<CasoEspecialFormProps> = ({ onSubmit, onCancel 
       // Agregar todos los campos del formulario
       formDataToSubmit.append('nombreAprendiz', formData.nombreAprendiz);
       formDataToSubmit.append('documento', formData.documento);
+      formDataToSubmit.append('tipoDocumento', formData.tipoDocumento);
       formDataToSubmit.append('ficha', formData.ficha);
       formDataToSubmit.append('descripcion', formData.descripcion);
       formDataToSubmit.append('fechaCaso', formData.fecha);
@@ -212,6 +224,29 @@ const CasoEspecialForm: React.FC<CasoEspecialFormProps> = ({ onSubmit, onCancel 
             error={errors.documento}
             required
           />
+          
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Tipo de Documento
+            </label>
+            <select
+              name="tipoDocumento"
+              value={formData.tipoDocumento}
+              onChange={handleChange}
+              className={`w-full max-w-xs mx-auto px-2 py-1.5 border rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-[#39A900] ${
+                errors.tipoDocumento ? 'border-red-500' : 'border-gray-300'
+              }`}
+              required
+            >
+              <option value="">Seleccione un tipo</option>
+              {tiposDocumento.map(tipo => (
+                <option key={tipo} value={tipo}>{tipo}</option>
+              ))}
+            </select>
+            {errors.tipoDocumento && (
+              <p className="mt-1 text-sm text-red-500">{errors.tipoDocumento}</p>
+            )}
+          </div>
           
           <Input
             label="Número de Ficha"

@@ -17,26 +17,37 @@ interface CasoFormProps {
 
 const CasoForm: React.FC<CasoFormProps> = ({ tipoCaso, onSubmit, onCancel }) => {
   const [formData, setFormData] = useState({
-    nombreAprendiz: '',
-    documento: '',
-    ficha: '',
-    descripcion: '',
     fecha: new Date().toISOString().split('T')[0],
-    usuarioRegistro: '',
+    nombre_aprendiz: '',
+    tipo_documento: '',
+    numero_documento: '',
+    numero_ficha: '',
+    motivo: '',
+    responsable: '',
   });
 
   const [files, setFiles] = useState<FileUpload[]>([]);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const fileInputRef = useRef<HTMLInputElement>(null);
 
+  const tiposDocumento = [
+    'Cédula de Ciudadanía',
+    'Tarjeta de Identidad',
+    'Cédula de Extranjería',
+    'Pasaporte',
+    'Registro Civil',
+    'Otro'
+  ];
+
   const validateForm = () => {
     const newErrors: Record<string, string> = {};
-    
-    if (!formData.nombreAprendiz) newErrors.nombreAprendiz = 'El nombre es requerido';
-    if (!formData.documento) newErrors.documento = 'El documento es requerido';
-    if (!formData.ficha) newErrors.ficha = 'La ficha es requerida';
-    if (!formData.descripcion) newErrors.descripcion = 'La descripción es requerida';
-    
+    if (!formData.fecha) newErrors.fecha = 'La fecha es requerida';
+    if (!formData.nombre_aprendiz) newErrors.nombre_aprendiz = 'El nombre es requerido';
+    if (!formData.tipo_documento) newErrors.tipo_documento = 'El tipo de documento es requerido';
+    if (!formData.numero_documento) newErrors.numero_documento = 'El número de documento es requerido';
+    if (!formData.numero_ficha) newErrors.numero_ficha = 'La ficha es requerida';
+    if (!formData.motivo) newErrors.motivo = 'El motivo es requerido';
+    if (!formData.responsable) newErrors.responsable = 'El responsable es requerido';
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -103,7 +114,7 @@ const CasoForm: React.FC<CasoFormProps> = ({ tipoCaso, onSubmit, onCancel }) => 
       });
 
       formDataToSubmit.append('fechaCaso', formData.fecha);
-      formDataToSubmit.append('usuarioRegistro', formData.usuarioRegistro);
+      formDataToSubmit.append('usuarioRegistro', formData.responsable);
 
       files.forEach((fileUpload, index) => {
         formDataToSubmit.append(`archivo${index}`, fileUpload.file);
@@ -135,10 +146,9 @@ const CasoForm: React.FC<CasoFormProps> = ({ tipoCaso, onSubmit, onCancel }) => 
     }
   };
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
-    // Limpiar error cuando el campo se modifica
     if (errors[name]) {
       setErrors(prev => ({ ...prev, [name]: '' }));
     }
@@ -153,49 +163,83 @@ const CasoForm: React.FC<CasoFormProps> = ({ tipoCaso, onSubmit, onCancel }) => 
       <form onSubmit={handleSubmit} className="space-y-4">
         <Input
           label="Nombre del Aprendiz"
-          name="nombreAprendiz"
-          value={formData.nombreAprendiz}
+          name="nombre_aprendiz"
+          value={formData.nombre_aprendiz}
           onChange={handleChange}
-          error={errors.nombreAprendiz}
+          error={errors.nombre_aprendiz}
           required
         />
         
+        <div className="mb-4">
+          <label className="block text-sm font-medium text-gray-700 mb-1">Tipo de Documento</label>
+          <select
+            name="tipo_documento"
+            value={formData.tipo_documento}
+            onChange={handleChange}
+            className={`w-full max-w-xs mx-auto px-2 py-1.5 border rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-[#39A900] ${errors.tipo_documento ? 'border-red-500' : 'border-gray-300'}`}
+            required
+          >
+            <option value="">Seleccione...</option>
+            {tiposDocumento.map((tipo, index) => (
+              <option key={index} value={tipo}>{tipo}</option>
+            ))}
+          </select>
+          {errors.tipo_documento && (
+            <p className="mt-1 text-sm text-red-500">{errors.tipo_documento}</p>
+          )}
+        </div>
+        
         <Input
           label="Número de Documento"
-          name="documento"
-          value={formData.documento}
+          name="numero_documento"
+          value={formData.numero_documento}
           onChange={handleChange}
-          error={errors.documento}
+          error={errors.numero_documento}
           required
         />
         
         <Input
           label="Número de Ficha"
-          name="ficha"
-          value={formData.ficha}
+          name="numero_ficha"
+          value={formData.numero_ficha}
           onChange={handleChange}
-          error={errors.ficha}
+          error={errors.numero_ficha}
           required
         />
         
         <div className="mb-4">
-          <label className="block text-sm font-medium text-gray-700 mb-1">
-            Descripción del Caso
-          </label>
+          <label className="block text-sm font-medium text-gray-700 mb-1">Motivo del Caso</label>
           <textarea
-            name="descripcion"
-            value={formData.descripcion}
+            name="motivo"
+            value={formData.motivo}
             onChange={handleChange}
-            className={`w-full max-w-xs mx-auto px-2 py-1.5 border rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-[#39A900] ${
-              errors.descripcion ? 'border-red-500' : 'border-gray-300'
-            }`}
+            className={`w-full max-w-xs mx-auto px-2 py-1.5 border rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-[#39A900] ${errors.motivo ? 'border-red-500' : 'border-gray-300'}`}
             rows={4}
             required
           />
-          {errors.descripcion && (
-            <p className="mt-1 text-sm text-red-500">{errors.descripcion}</p>
+          {errors.motivo && (
+            <p className="mt-1 text-sm text-red-500">{errors.motivo}</p>
           )}
         </div>
+        
+        <Input
+          label="Responsable"
+          name="responsable"
+          value={formData.responsable}
+          onChange={handleChange}
+          error={errors.responsable}
+          required
+        />
+        
+        <Input
+          label="Fecha"
+          name="fecha"
+          type="date"
+          value={formData.fecha}
+          onChange={handleChange}
+          error={errors.fecha}
+          required
+        />
 
         <div className="mb-4">
           <label className="block text-sm font-medium text-gray-700 mb-1">

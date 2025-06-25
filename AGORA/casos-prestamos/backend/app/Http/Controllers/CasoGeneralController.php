@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Carbon\Carbon; // Necesario para manejar fechas, asegúrate de tenerlo instalado (viene por defecto con Laravel)
+use App\Http\Requests\CasoGeneralRequest;
 
 class CasoGeneralController extends Controller
 {
@@ -44,46 +45,16 @@ class CasoGeneralController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\JsonResponse
      */
-    public function store(Request $request)
+    public function store(CasoGeneralRequest $request)
     {
-        // 1. Validación de los campos requeridos en el formulario
-        // Laravel's built-in validator is powerful and easy to use.
-        try {
-            $request->validate([
-                'fecha' => 'required|date',
-                'nombre_aprendiz' => 'required|string|max:255',
-                'tipo_documento' => 'required|string|max:50',
-                'numero_documento' => 'required|string|max:50',
-                'numero_ficha' => 'required|string|max:50',
-                'motivo' => 'required|string',
-                'responsable' => 'required|string|max:255',
-                // Validación para la firma: opcional, debe ser imagen, tipos específicos, tamaño máximo 2MB
-                'firma_aprendiz' => 'nullable|image|mimes:jpeg,png,jpg|max:2048', // max:2048 significa 2048 KB = 2 MB
-            ], [
-                // Mensajes personalizados para los errores de validación
-                'required' => 'El campo :attribute es obligatorio.',
-                'date' => 'El campo :attribute debe ser una fecha válida.',
-                'string' => 'El campo :attribute debe ser texto.',
-                'max' => 'El campo :attribute no debe exceder :max caracteres o :max KB.',
-                'image' => 'El archivo de :attribute debe ser una imagen.',
-                'mimes' => 'La :attribute debe ser de tipo: :values.',
-            ]);
-        } catch (\Illuminate\Validation\ValidationException $e) {
-            // Captura los errores de validación y los devuelve como una respuesta JSON 422
-            return response()->json([
-                'message' => 'Error de validación en los datos proporcionados.',
-                'errors' => $e->errors(),
-            ], 422);
-        }
-
-        // Iniciar una transacción de base de datos para asegurar la atomicidad
+        // La validación se hace automáticamente en el Request
         DB::beginTransaction();
 
         try {
-            // 2. Implementar lógica para generar número de caso único
+            // Generar número de caso único
             $numeroCaso = $this->generateUniqueCaseNumber();
 
-            // 3. Crear el registro del caso general en la base de datos
+            // Crear el caso usando el modelo optimizado
             $caso = CasoGeneral::create([
                 'numero_caso' => $numeroCaso,
                 'fecha' => $request->fecha,
@@ -93,55 +64,91 @@ class CasoGeneralController extends Controller
                 'numero_ficha' => $request->numero_ficha,
                 'motivo' => $request->motivo,
                 'responsable' => $request->responsable,
-                'categoria_caso' => 'Caso General', // Según lo especificado en la tarea
-                'estado' => 'Pendiente', // Estado inicial por defecto
             ]);
 
-            // 4. Procesar y guardar la firma si se ha adjuntado un archivo
+            // Procesar archivos si se adjuntaron
             if ($request->hasFile('firma_aprendiz')) {
-                $file = $request->file('firma_aprendiz');
-                // Generar un nombre de archivo único para evitar colisiones
-                $filename = Str::random(40) . '.' . $file->getClientOriginalExtension();
-                // Definir la ruta de almacenamiento dentro del disco 'public'
-                $filePath = 'firmas/' . $filename;
-
-                // Guardar el archivo en el sistema de almacenamiento de Laravel
-                // El 'disk' 'public' se refiere a storage/app/public, que se enlaza a public/storage
-                Storage::disk('public')->put($filePath, file_get_contents($file));
-
-                // 5. Relacionar el archivo subido con el caso general recién creado
-                ArchivoCaso::create([
-                    'caso_id' => $caso->id, // Usa el ID del caso general recién creado
-                    'nombre_archivo' => $file->getClientOriginalName(), // Nombre original del archivo
-                    'ruta_archivo' => $filePath, // Ruta relativa para accederlo
-                    'tipo_mime' => $file->getClientMimeType(),
-                    'tamano_bytes' => $file->getSize(),
-                    'tipo_archivo' => 'Firma', // Tipo específico de archivo para este caso
-                ]);
+                $this->procesarArchivo($request->file('firma_aprendiz'), $caso, 'Firma');
             }
 
-            // Si todo ha ido bien, confirmar la transacción
+            // Procesar archivos adicionales si vienen del frontend
+            if ($request->hasFile('archivos')) {
+                foreach ($request->file('archivos') as $archivo) {
+                    $this->procesarArchivo($archivo, $caso, 'Documento');
+                }
+            }
+
+            // Confirmar transacción
             DB::commit();
 
-            // Devolver una respuesta JSON con el éxito y el número de caso generado
             return response()->json([
+                'success' => true,
                 'message' => 'Caso general registrado exitosamente.',
-                'numero_caso' => $caso->numero_caso, // Devuelve el número de caso único
-                'caso_id' => $caso->id, // Devuelve el ID del caso
-            ], 201); // Código de estado HTTP 201 (Created)
+                'data' => [
+                    'numero_caso' => $caso->numero_caso,
+                    'caso_id' => $caso->id,
+                    'fecha_formateada' => $caso->fecha_formateada,
+                ]
+            ], 201);
 
         } catch (\Exception $e) {
-            // Si ocurre algún error, revertir la transacción
             DB::rollBack();
+            
+            \Log::error('Error al registrar caso general: ' . $e->getMessage(), [
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+                'trace' => $e->getTraceAsString()
+            ]);
 
-            // Registrar el error para depuración
-            \Log::error('Error al registrar caso general: ' . $e->getMessage() . ' en ' . $e->getFile() . ' línea ' . $e->getLine());
-
-            // Devolver una respuesta de error JSON 500
             return response()->json([
-                'message' => 'Hubo un error al procesar la solicitud. Por favor, intente de nuevo.',
-                'error' => $e->getMessage(),
+                'success' => false,
+                'message' => 'Error interno del servidor. Por favor, intente de nuevo.',
+                'error' => config('app.debug') ? $e->getMessage() : 'Error interno',
             ], 500);
+        }
+    }
+
+    /**
+     * Procesa y guarda un archivo asociado a un caso
+     */
+    private function procesarArchivo($file, $caso, $tipoArchivo = 'Documento')
+    {
+        try {
+            // Validar archivo usando las reglas del modelo ArchivoCaso
+            $datosArchivo = [
+                'nombre_archivo' => $file->getClientOriginalName(),
+                'tipo_mime' => $file->getClientMimeType(),
+                'tamano_bytes' => $file->getSize(),
+                'tipo_archivo' => $tipoArchivo,
+            ];
+
+            // Validar datos del archivo
+            $validator = \Validator::make($datosArchivo, ArchivoCaso::rules(), ArchivoCaso::messages());
+            
+            if ($validator->fails()) {
+                throw new \Exception('Datos del archivo inválidos: ' . $validator->errors()->first());
+            }
+
+            // Generar nombre único para el archivo
+            $filename = Str::random(40) . '.' . $file->getClientOriginalExtension();
+            $filePath = 'casos/' . $caso->numero_caso . '/' . $filename;
+
+            // Guardar archivo
+            Storage::disk('public')->put($filePath, file_get_contents($file));
+
+            // Crear registro en la base de datos
+            $caso->agregarArchivo([
+                'caso_id' => $caso->id,
+                'nombre_archivo' => $file->getClientOriginalName(),
+                'ruta_archivo' => $filePath,
+                'tipo_mime' => $file->getClientMimeType(),
+                'tamano_bytes' => $file->getSize(),
+                'tipo_archivo' => $tipoArchivo,
+            ]);
+
+        } catch (\Exception $e) {
+            \Log::error('Error al procesar archivo: ' . $e->getMessage());
+            throw $e;
         }
     }
 

@@ -21,6 +21,39 @@ class ArchivoCaso extends Model
         'descripcion',
     ];
 
+    // Casts para asegurar tipos de datos correctos
+    protected $casts = [
+        'tamano_bytes' => 'integer',
+        'created_at' => 'datetime',
+        'updated_at' => 'datetime',
+    ];
+
+    // Valores por defecto
+    protected $attributes = [
+        'tipo_archivo' => 'Documento',
+    ];
+
+    // Mutators para limpiar datos antes de guardar
+    public function setNombreArchivoAttribute($value)
+    {
+        $this->attributes['nombre_archivo'] = trim($value);
+    }
+
+    public function setRutaArchivoAttribute($value)
+    {
+        $this->attributes['ruta_archivo'] = trim($value);
+    }
+
+    public function setTipoArchivoAttribute($value)
+    {
+        $this->attributes['tipo_archivo'] = ucfirst(strtolower(trim($value)));
+    }
+
+    public function setDescripcionAttribute($value)
+    {
+        $this->attributes['descripcion'] = $value ? trim($value) : null;
+    }
+
     /**
      * Relación inversa uno a muchos con CasoGeneral
      * Un archivo pertenece a un caso
@@ -77,7 +110,9 @@ class ArchivoCaso extends Model
      */
     public static function buscarPorTipo($tipoArchivo)
     {
-        return static::where('tipo_archivo', $tipoArchivo)->with('casoGeneral')->get();
+        return static::where('tipo_archivo', ucfirst(strtolower(trim($tipoArchivo))))
+                    ->with('casoGeneral')
+                    ->get();
     }
 
     /**
@@ -85,6 +120,85 @@ class ArchivoCaso extends Model
      */
     public static function buscarPorCaso($casoId)
     {
-        return static::where('caso_id', $casoId)->orderBy('created_at', 'desc')->get();
+        return static::where('caso_id', $casoId)
+                    ->orderBy('created_at', 'desc')
+                    ->get();
+    }
+
+    // Accessors para formatear datos
+    public function getExtensionAttribute()
+    {
+        return pathinfo($this->nombre_archivo, PATHINFO_EXTENSION);
+    }
+
+    public function getEsImagenAttribute()
+    {
+        $extensionesImagen = ['jpg', 'jpeg', 'png', 'gif', 'bmp', 'webp'];
+        return in_array(strtolower($this->extension), $extensionesImagen);
+    }
+
+    public function getEsPdfAttribute()
+    {
+        return strtolower($this->extension) === 'pdf';
+    }
+
+    // Scopes para consultas comunes
+    public function scopePorTipo($query, $tipoArchivo)
+    {
+        return $query->where('tipo_archivo', $tipoArchivo);
+    }
+
+    public function scopePorCaso($query, $casoId)
+    {
+        return $query->where('caso_id', $casoId);
+    }
+
+    public function scopeImagenes($query)
+    {
+        return $query->whereIn('tipo_mime', ['image/jpeg', 'image/png', 'image/gif', 'image/bmp', 'image/webp']);
+    }
+
+    public function scopePdfs($query)
+    {
+        return $query->where('tipo_mime', 'application/pdf');
+    }
+
+    // Validación personalizada
+    public static function rules()
+    {
+        return [
+            'caso_id' => 'required|exists:casos_generales,id',
+            'nombre_archivo' => 'required|string|max:255',
+            'ruta_archivo' => 'required|string|max:500',
+            'tipo_mime' => 'required|string|max:100',
+            'tamano_bytes' => 'required|integer|min:1',
+            'tipo_archivo' => 'required|string|max:50',
+            'descripcion' => 'nullable|string|max:500',
+        ];
+    }
+
+    public static function messages()
+    {
+        return [
+            'caso_id.required' => 'El ID del caso es obligatorio.',
+            'caso_id.exists' => 'El caso especificado no existe.',
+            'nombre_archivo.required' => 'El nombre del archivo es obligatorio.',
+            'ruta_archivo.required' => 'La ruta del archivo es obligatoria.',
+            'tipo_mime.required' => 'El tipo MIME es obligatorio.',
+            'tamano_bytes.required' => 'El tamaño del archivo es obligatorio.',
+            'tamano_bytes.integer' => 'El tamaño debe ser un número entero.',
+            'tamano_bytes.min' => 'El tamaño debe ser mayor a 0.',
+            'tipo_archivo.required' => 'El tipo de archivo es obligatorio.',
+        ];
+    }
+
+    // Hook para eliminar archivo físico cuando se elimina el registro
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::deleting(function ($archivo) {
+            $archivo->eliminarArchivoFisico();
+        });
     }
 }

@@ -3,9 +3,10 @@ import SignatureCanvas from 'react-signature-canvas';
 
 interface SignaturePadProps {
     onSignatureChange: (signature: string) => void;
+    onSave?: (firma: any) => void;
 }
 
-export default function SignaturePad({ onSignatureChange }: SignaturePadProps) {
+export default function SignaturePad({ onSignatureChange, onSave }: SignaturePadProps) {
     const signatureRef = useRef<SignatureCanvas>(null);
     const [isEmpty, setIsEmpty] = useState(true);
 
@@ -14,6 +15,7 @@ export default function SignaturePad({ onSignatureChange }: SignaturePadProps) {
             signatureRef.current.clear();
             setIsEmpty(true);
             onSignatureChange('');
+            if (onSave) onSave('');
         }
     };
 
@@ -24,6 +26,7 @@ export default function SignaturePad({ onSignatureChange }: SignaturePadProps) {
             if (!isEmpty) {
                 const signatureData = signatureRef.current.toDataURL();
                 onSignatureChange(signatureData);
+                if (onSave) onSave(signatureData);
             }
         }
     };

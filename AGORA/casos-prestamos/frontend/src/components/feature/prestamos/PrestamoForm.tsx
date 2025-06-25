@@ -12,6 +12,7 @@ export default function PrestamoForm({ onSave, onCancel }: PrestamoFormProps) {
     const [formData, setFormData] = useState({
         nombreAprendiz: '',
         documentoAprendiz: '',
+        tipoDocumentoAprendiz: '',
         descripcionElemento: '',
         numeroPlaca: '',
     });
@@ -21,6 +22,15 @@ export default function PrestamoForm({ onSave, onCancel }: PrestamoFormProps) {
     const fechaActual = new Date().toISOString().slice(0, 10);
     const now = new Date();
     const horaActual = now.toTimeString().slice(0,5);
+
+    const tiposDocumento = [
+        'Cédula de Ciudadanía',
+        'Tarjeta de Identidad',
+        'Cédula de Extranjería',
+        'Pasaporte',
+        'Registro Civil',
+        'Otro'
+    ];
 
     const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const selectedFiles = Array.from(e.target.files || []);
@@ -60,7 +70,7 @@ export default function PrestamoForm({ onSave, onCancel }: PrestamoFormProps) {
         setError(null);
 
         // Validar campos requeridos
-        if (!formData.nombreAprendiz || !formData.documentoAprendiz || !formData.descripcionElemento || !formData.numeroPlaca) {
+        if (!formData.nombreAprendiz || !formData.documentoAprendiz || !formData.tipoDocumentoAprendiz || !formData.descripcionElemento || !formData.numeroPlaca) {
             setError('Todos los campos son obligatorios');
             return;
         }
@@ -69,6 +79,7 @@ export default function PrestamoForm({ onSave, onCancel }: PrestamoFormProps) {
         const data = new FormData();
         data.append('nombreAprendiz', formData.nombreAprendiz);
         data.append('documentoAprendiz', formData.documentoAprendiz);
+        data.append('tipoDocumentoAprendiz', formData.tipoDocumentoAprendiz);
         data.append('descripcionElemento', formData.descripcionElemento);
         data.append('numeroPlaca', formData.numeroPlaca);
         data.append('horaInicio', horaActual);
@@ -112,6 +123,21 @@ export default function PrestamoForm({ onSave, onCancel }: PrestamoFormProps) {
                 </div>
 
                 <div>
+                    <label className="block text-sm font-medium text-gray-700">Tipo de Documento del Aprendiz</label>
+                    <select
+                        value={formData.tipoDocumentoAprendiz}
+                        onChange={(e) => setFormData({...formData, tipoDocumentoAprendiz: e.target.value})}
+                        className="w-full max-w-xs px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#39A900]"
+                        required
+                    >
+                        <option value="">Seleccione un tipo</option>
+                        {tiposDocumento.map((tipo, index) => (
+                            <option key={index} value={tipo}>{tipo}</option>
+                        ))}
+                    </select>
+                </div>
+
+                <div>
                     <label className="block text-sm font-medium text-gray-700">Descripción del Elemento</label>
                     <Input
                         type="text"
@@ -133,7 +159,7 @@ export default function PrestamoForm({ onSave, onCancel }: PrestamoFormProps) {
 
                 <div>
                     <label className="block text-sm font-medium text-gray-700">Hora de Inicio</label>
-                    <div className="px-3 py-2 border rounded-md bg-gray-100 text-gray-700">{horaActual}</div>
+                    <div className="w-full max-w-xs px-3 py-2 border rounded-md bg-gray-100 text-gray-700">{horaActual}</div>
                 </div>
 
                 <div className="mb-4">

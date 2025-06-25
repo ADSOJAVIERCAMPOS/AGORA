@@ -19,12 +19,14 @@ const CasoAcudienteForm: React.FC<CasoAcudienteFormProps> = ({ onSubmit, onCance
     // Datos del Aprendiz
     nombreAprendiz: '',
     documentoAprendiz: '',
+    tipoDocumentoAprendiz: '',
     fechaNacimientoAprendiz: '',
     programa: '',
     ficha: '',
     // Datos del Acudiente
     nombreAcudiente: '',
     documentoAcudiente: '',
+    tipoDocumentoAcudiente: '',
     parentesco: '',
     telefonoAcudiente: '',
     // emailAcudiente: '',
@@ -59,18 +61,29 @@ const CasoAcudienteForm: React.FC<CasoAcudienteFormProps> = ({ onSubmit, onCance
     'Otro'
   ];
 
+  const tiposDocumento = [
+    'Cédula de Ciudadanía',
+    'Tarjeta de Identidad',
+    'Cédula de Extranjería',
+    'Pasaporte',
+    'Registro Civil',
+    'Otro'
+  ];
+
   const validateForm = () => {
     const newErrors: Record<string, string> = {};
     
     // Validaciones del Aprendiz
     if (!formData.nombreAprendiz) newErrors.nombreAprendiz = 'El nombre del aprendiz es requerido';
     if (!formData.documentoAprendiz) newErrors.documentoAprendiz = 'El documento del aprendiz es requerido';
+    if (!formData.tipoDocumentoAprendiz) newErrors.tipoDocumentoAprendiz = 'El tipo de documento del aprendiz es requerido';
     if (!formData.fechaNacimientoAprendiz) newErrors.fechaNacimientoAprendiz = 'La fecha de nacimiento es requerida';
     if (!formData.ficha) newErrors.ficha = 'La ficha es requerida';
     
     // Validaciones del Acudiente
     if (!formData.nombreAcudiente) newErrors.nombreAcudiente = 'El nombre del acudiente es requerido';
     if (!formData.documentoAcudiente) newErrors.documentoAcudiente = 'El documento del acudiente es requerido';
+    if (!formData.tipoDocumentoAcudiente) newErrors.tipoDocumentoAcudiente = 'El tipo de documento del acudiente es requerido';
     if (!formData.parentesco) newErrors.parentesco = 'El parentesco es requerido';
     if (!formData.telefonoAcudiente) newErrors.telefonoAcudiente = 'El teléfono del acudiente es requerido';
     // if (!formData.emailAcudiente) newErrors.emailAcudiente = 'El email del acudiente es requerido';
@@ -205,6 +218,29 @@ const CasoAcudienteForm: React.FC<CasoAcudienteFormProps> = ({ onSubmit, onCance
               required
             />
             
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Tipo de Documento del Aprendiz
+              </label>
+              <select
+                name="tipoDocumentoAprendiz"
+                value={formData.tipoDocumentoAprendiz}
+                onChange={handleChange}
+                className={`w-full max-w-xs mx-auto px-2 py-1.5 border rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-[#39A900] ${
+                  errors.tipoDocumentoAprendiz ? 'border-red-500' : 'border-gray-300'
+                }`}
+                required
+              >
+                <option value="">Seleccione un tipo</option>
+                {tiposDocumento.map(tipo => (
+                  <option key={tipo} value={tipo}>{tipo}</option>
+                ))}
+              </select>
+              {errors.tipoDocumentoAprendiz && (
+                <p className="mt-1 text-sm text-red-500">{errors.tipoDocumentoAprendiz}</p>
+              )}
+            </div>
+            
             <Input
               label="Fecha de Nacimiento"
               name="fechaNacimientoAprendiz"
@@ -247,6 +283,29 @@ const CasoAcudienteForm: React.FC<CasoAcudienteFormProps> = ({ onSubmit, onCance
               error={errors.documentoAcudiente}
               required
             />
+            
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Tipo de Documento del Acudiente
+              </label>
+              <select
+                name="tipoDocumentoAcudiente"
+                value={formData.tipoDocumentoAcudiente}
+                onChange={handleChange}
+                className={`w-full max-w-xs mx-auto px-2 py-1.5 border rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-[#39A900] ${
+                  errors.tipoDocumentoAcudiente ? 'border-red-500' : 'border-gray-300'
+                }`}
+                required
+              >
+                <option value="">Seleccione un tipo</option>
+                {tiposDocumento.map(tipo => (
+                  <option key={tipo} value={tipo}>{tipo}</option>
+                ))}
+              </select>
+              {errors.tipoDocumentoAcudiente && (
+                <p className="mt-1 text-sm text-red-500">{errors.tipoDocumentoAcudiente}</p>
+              )}
+            </div>
             
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -420,4 +479,4 @@ const CasoAcudienteForm: React.FC<CasoAcudienteFormProps> = ({ onSubmit, onCance
   );
 };
 
-export default CasoAcudienteForm; 
+export default CasoAcudienteForm;
